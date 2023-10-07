@@ -1,4 +1,4 @@
-# 00 - CEF/Syslog forwarder configuration for Azure Monitor Agent (AMA)
+# 01 - RSyslog configuration for CEF/Syslog forwarding with AMA
 
 ## Checklist
 
@@ -19,11 +19,12 @@ Follow the default provisioning steps for a Linux machine in your environment. I
 
 If this is a non-Azure machine, you'll need to onboard it to Azure Arc first. You can find more information about it [here](https://docs.microsoft.com/en-us/azure/azure-arc/servers/overview).
 
-## Create Data Collection Rule
+## Create Data Collection Rules
 
 - Go to the Azure Portal and navigate to the **Microsoft Sentinel**. There find the **Content Hub** option.
 - Install the **Common Event Format** solution. This will install the **Common Event Format (CEF) via AMA (Preview)** connector.
 - Go to the newly installed connector and click on **Open Connector Page**. There you'll find the **Data Collection Rules** option where you should create one which should be associated with the machine provisioned in the previous step.
+- Do the same for the **Syslog**, but this time creating a standard DCR and associating it with the machine provisioned in the previous step.
 
 ## Finish collector configuration
 
