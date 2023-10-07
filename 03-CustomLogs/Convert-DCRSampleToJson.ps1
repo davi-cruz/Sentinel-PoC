@@ -1,3 +1,5 @@
+#Requires -Version 7.0
+
 <#
 .SYNOPSIS
 Converts a sample log file to JSON format to be used with Log Analytics new Table Wizard
@@ -22,19 +24,9 @@ param(
 )
 
 $logs = Get-Content $sampleFile
-$data = $logs | ForEach-Object {
-    Select-Object -Property @{Name='RawData';Expression={$_}}
+$data = @()
+$logs | ForEach-Object {
+    $data += @{"RawData" = $_}
 }
 
-$data | ConvertTo-Json | Out-File -FilePath "$sampleFile.json" -Encoding utf8
-
-param(
-    $sampleFile
-)
-
-$logs = Get-Content $sampleFile
-$data = $logs | ForEach-Object {
-    Select-Object -Property @{Name='RawData';Expression={$_}}
-}
-
-$data | ConvertTo-Json | Out-File -FilePath "$sampleFile.json" -Encoding utf8
+$data | ConvertTo-Json | Out-File "$sampleFile.json"

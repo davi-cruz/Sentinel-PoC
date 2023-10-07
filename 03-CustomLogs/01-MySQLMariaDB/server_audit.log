@@ -1,0 +1,10 @@
+20231003 12:38:55,SRVLX02,root,localhost,32,63,QUERY,,'set global server_audit_logging=ON',0
+20231003 12:39:11,SRVLX02,root,localhost,32,64,QUERY,,'SET GLOBAL server_audit_events = \'CONNECT,QUERY,TABLE\'',0
+20231003 12:39:46,SRVLX02,root,localhost,33,0,CONNECT,,,0
+20231003 12:39:46,SRVLX02,root,localhost,33,65,QUERY,,'select @@version_comment limit 1',0
+20231003 12:39:50,SRVLX02,root,localhost,33,0,DISCONNECT,,,0
+20231003 12:41:12,SRVLX02,root,localhost,32,67,QUERY,,'set global server_audit_incl_users = \'wordpress,root\'',0
+20231003 12:41:18,SRVLX02,root,localhost,32,68,QUERY,,'show global variables like \'server_audit%\'',0
+20231003 12:45:00,SRVLX02,root,localhost,32,69,QUERY,,'show global variables like \'server_audit%\'',0
+20231003 12:45:19,SRVLX02,root,localhost,32,0,DISCONNECT,,,0
+20231003 12:46:35,SRVLX02,wordpress,localhost,34,0,CONNECT,,,0
