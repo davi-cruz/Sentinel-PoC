@@ -1,0 +1,119 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workspace": {
+      "type": "string",
+      "defaultValue": ""
+    }
+  },
+  "resources": [
+    {
+      "id": "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.OperationalInsights/workspaces/',parameters('workspace'),'/providers/Microsoft.SecurityInsights/dataConnectors/',guid(subscription().subscriptionId))]",
+      "name": "[concat(parameters('workspace'),'/Microsoft.SecurityInsights/',guid(subscription().subscriptionId))]",
+      "apiVersion": "2021-03-01-preview",
+      "type": "Microsoft.OperationalInsights/workspaces/providers/dataConnectors",
+      "kind": "APIPolling",
+      "properties": {
+        "connectorUiConfig": {
+          "title": "Mock Log Polling Codeless Connector",
+          "id": "a725d35a-bdd5-4cfc-ac99-6e6112db4d27",
+          "publisher": "Davi Cruz",
+          "descriptionMarkdown": "Mock Log connector ingest mock security events in to Microsoft Sentinel.",
+          "graphQueriesTableName": "MockLog_CL",
+          "graphQueries": [
+            {
+              "metricName": "Total data received",
+              "legend": "Mock Log Entries",
+              "baseQuery": "{{graphQueriesTableName}}"
+            }
+          ],
+          "sampleQueries": [
+            {
+              "description": "Get all indicators ",
+              "query": "{{graphQueriesTableName}}"
+            }
+          ],
+          "dataTypes": [
+            {
+              "name": "{{graphQueriesTableName}}",
+              "lastDataReceivedQuery": "{{graphQueriesTableName}}\n            | summarize Time = max(TimeGenerated)"
+            }
+          ],
+          "connectivityCriteria": [
+            {
+              "type": "SentinelKindsV2",
+              "value": [
+                "APIPolling"
+              ]
+            }
+          ],
+          "availability": {
+            "status": 1,
+            "isPreview": false
+          },
+          "permissions": {
+            "resourceProvider": [
+              {
+                "provider": "Microsoft.OperationalInsights/workspaces",
+                "permissionsDisplayText": "read and write permissions are required.",
+                "providerDisplayName": "Workspace",
+                "scope": "Workspace",
+                "requiredPermissions": {
+                  "action": true,
+                  "write": true,
+                  "read": true,
+                  "delete": true
+                }
+              }
+            ],
+            "customs": [
+              {
+                "name": "Mock LogAPI Key",
+                "description": "A Mock LogAPI key is required."
+              }
+            ]
+          },
+          "instructionSteps": [
+            {
+              "title": "Connect Mock Log to Microsoft Sentinel",
+              "description": "Provide the Mock LogAPI Key.",
+              "instructions": [
+                {
+                  "parameters": {
+                    "enable": "true"
+                  },
+                  "type": "APIKey"
+                }
+              ]
+            }
+          ]
+        },
+        "pollingConfig": {
+          "auth": {
+            "authType": "APIKey",
+            "APIKeyName": "x-functions-key",
+            "IsAPIKeyInPostPayload": false
+          },
+          "request": {
+            "apiEndpoint": "https://fn-dc-sentinel.azurewebsites.net/api/nextPageUrl",
+            "rateLimitQPS": 2,
+            "httpMethod": "Get",
+            "queryTimeFormat": "yyyy-MM-ddTHH:mm:ssZ",
+            "retryCount": 3,
+            "queryWindowInMin": 10,
+            "timeoutInSeconds": 120
+          },
+          "response": {
+            "eventsJsonPaths": [
+              "$.messages"
+            ]
+          },
+          "paging": {
+            "pagingType": "None"
+          }
+        }
+      }
+    }
+  ]
+}
