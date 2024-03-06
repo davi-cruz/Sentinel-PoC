@@ -100,7 +100,7 @@ certtool --generate-certificate --load-request client-request.pem --outfile clie
 
 ```bash
 ## Install required packages
-apt install -y ca-certificates
+apt install -y ca-certificates rsyslog-gnutls
 
 ## Disable imtcp module in /etc/rsyslog.conf
 sed -i '/imtcp/s/^/#/g' /etc/rsyslog.conf
@@ -111,6 +111,7 @@ mkdir -p /etc/ssl/rsyslog
 ## Copy files to /etc/ssl/rsyslog
 ## Files to be copied: ca.pem, server-key.pem, server.pem
 cp -r ../certs/ * /etc/ssl/rsyslog
+chown -R syslog:root /etc/ssl/rsyslog
 
 ## Update certificates
 cp /etc/ssl/rsyslog/ca.pem /usr/local/share/ca-certificates/ca.pem
@@ -180,9 +181,16 @@ global(
     DefaultNetStreamDriverCAFile="/etc/ssl/rsyslog/ca.pem"
 )
 
-# Make TLS the default transport
-action(type="omfwd" protocol="tcp" port="6514"
-       StreamDriver="gtls" StreamDriverMode="1" StreamDriverAuthMode="anon")
+## Make TLS the default transport
+## If using the new syntax:
+action(type="omfwd" protocol="tcp" port="6514" Target="<rsyslogServer>"
+StreamDriver="gtls" StreamDriverMode="1" StreamDriverAuthMode="anon" )
+
+## If using the legacy syntax:
+$DefaultNetstreamDriver gtls # use gtls netstream driver
+$ActionSendStreamDriverMode 1 # require TLS for the connection
+$ActionSendStreamDriverAuthMode anon # server is NOT authenticated
+*.* @@<rsyslogServer>:6514 # send everything to remote syslog server
 ```
 
 Reload the RSyslog service to apply the changes:
